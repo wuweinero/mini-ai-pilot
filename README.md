@@ -6,12 +6,12 @@
 ![Demonstration Gif](./demo.gif)
 
 ## Features 🔥
-- Supports Openai API
-- Supports Local LLM
-- Supports code completion
-- Supports chat functionality
-- Supports question and answer for selected code
-- Supports Windows systems
+- Compatible with OpenAI API
+- Works with Local LLM
+- Provides code completion
+- Includes chat functionality
+- Offers question and answer support for selected code
+- Compatible with Windows systems
 
 ## Installation ⬇️ 
 - Search for "Mini AI Pilot" in the Visual Studio Code extension market and click to install.
@@ -27,13 +27,13 @@
 
 ## Common QAs
 #### Q: What is the character or token limit per query?
-A: The maximum length of a single input is 4000 characters. In the chat function, you cannot continue typing if you exceed 4000 characters. In the code completion function, characters exceeding 4000 will be automatically truncated.
+A: The maximum length of a single input is 4000 characters in the chat mode. Characters exceeding 4000 will be automatically truncated in the code completion mode.
 #### Q: What system requirements does my computer need to meet to deploy a local LLM?
-A: Currently, in the author's tests, the lowest 4G of VRAM can use the 1.3B model without pressure. If your computer has lower specs, you can modify the 36 after the n-gpu-layers in CMD_FLAGS.txt to 0, which will completely use the CPU for calculations, but note that this will significantly reduce the speed.
+A: In the author's tests, the 1.3B model can be used without any pressure with just 4G of VRAM. If your computer has lower specifications, you can modify the 36 after the n-gpu-layers in CMD_FLAGS.txt to 0, which will completely use the CPU for inference, but note that this will significantly reduce the speed.
 #### Q: Why does code completion seem slower than Q&A?
-A: Code completion is not streamed, it only returns results after all are generated, which is as fast as streamed return. And, the generation speed is related to your computer configuration. If your computer's configuration is low, it is recommended to wait a moment after pressing Alt+Q.
+A: Code completion is not streamed, it only returns results after all are generated. Moreover, the generation speed is related to your computer configuration. If your computer has lower specifications, it is recommended to wait a moment after pressing Alt+Q.
 #### Q: Does it support auto-triggering code completion after input or line break?
-A: This plugin only supports active triggering of completion (Alt+Q or right-click menu), because the author found automatic completion very confusing when using other plugins.
+A: This plugin is intentionally designed to only support active triggering of completion (Alt+Q or right-click), as automatic triggering can be very annoying at times.
 #### Q: What operating systems are supported?
 A: The one-click LLM deployment package uploaded by the author only supports Windows systems. If you need to use it on other systems, you can install and deploy it yourself according to the official documentation of [text-generation-webui](https://github.com/oobabooga/text-generation-webui).
 
