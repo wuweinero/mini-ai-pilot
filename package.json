@@ -1,0 +1,108 @@
+{
+  "name": "mini-ai-pilot",
+  "displayName": "Mini AI Pilot",
+  "description": "LLM-powered code pilot implements the essential and fundamental features necessary.",
+  "repository": {
+    "url": "https://github.com/wuweinero/mini-ai-pilot"
+  },
+  "icon": "logo.png",
+  "publisher": "wuwei",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:python",
+    "onLanguage:java",
+    "onLanguage:csharp",
+    "onLanguage:cpp",
+    "onLanguage:vue",
+    "onLanguage:html",
+    "onLanguage:css",
+    "onLanguage:typescript",
+    "onLanguage:javascriptreact"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "mini-ai-pilot",
+      "properties": {
+        "mini-ai-pilot.endpoint": {
+          "type": "string",
+          "default": "http://127.0.0.1:5000",
+          "description": "The endpoint for the completion API."
+        },
+        "mini-ai-pilot.max_tokens": {
+          "type": "number",
+          "default": 2048,
+          "description": "The maximum number of output tokens for the completion API."
+        },
+        "mini-ai-pilot.temperature": {
+          "type": "number",
+          "default": 0.5,
+          "description": "The randomness level of output generation. A higher value leads to more random outputs."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "extension.triggerInlineCompletion",
+        "title": "Auto Completion"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.triggerInlineCompletion",
+        "key": "alt+q",
+        "when": "editorTextFocus"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sideMenu",
+          "title": "MINI AI PILOT",
+          "icon": "media/dark.svg"
+        }
+      ]
+    },
+    "views": {
+      "sideMenu": [
+        {
+          "id": "sideView",
+          "name": "",
+          "type": "webview"
+        }
+      ]
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "command": "extension.triggerInlineCompletion",
+          "group": "z"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.8",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "axios": "^1.6.5"
+  }
+}

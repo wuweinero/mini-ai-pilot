@@ -1,0 +1,6 @@
+.table{
+  width: 100%;
+  border-collapse: collapse;
+  /* 背景设为透明 */
+  background-color: transparent;
+}
