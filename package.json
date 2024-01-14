@@ -1,13 +1,13 @@
 {
   "name": "mini-ai-pilot",
   "displayName": "Mini AI Pilot",
-  "description": "LLM-powered code pilot implements the essential and fundamental features necessary.",
+  "description": "A minimalist VS Code Copilot extension, working with a local LLM server.",
   "repository": {
     "url": "https://github.com/wuweinero/mini-ai-pilot"
   },
   "icon": "logo.png",
-  "publisher": "wuwei",
-  "version": "1.0.0",
+  "publisher": "wuweinero",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.85.0"
   },
