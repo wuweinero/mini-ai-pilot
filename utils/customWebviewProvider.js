@@ -4,6 +4,8 @@ const path = require('path');
 
 let config = vscode.workspace.getConfiguration('mini-ai-pilot');
 let endpoint = config.get('endpoint');
+let apiKey = config.get('api_key')
+let model = config.get('model')
 let maxTokens = config.get('max_tokens');
 let temperature = config.get('temperature');
 let maxLength = 4000;
@@ -44,28 +46,31 @@ const processFetchResponse = (webviewView, response) => {
 
       reader.read().then(function processText({ done, value }) {
         if (done) {
-          sendFinishMessage(webviewView);
+          sendFinishMessage(webviewView)
           resolve()
           return
         }
-
         let chunk = decoder.decode(value)
-        if(chunk.startsWith('data:')){
-          chunk = chunk.slice(6)
-        }
-        try{
-          const payload = JSON.parse(chunk)
-          chunk = payload['choices'][0]['message']['content']
-
-          webviewView.webview.postMessage({
-            command: 'response',
-            finished: false,
-            text: chunk
-          })
-        }catch(error){
-          console.log('Error:', error)
-        }
-        
+        // 使用 'data:'的切分
+        let chunkArray = chunk.split("data:");
+        chunkArray.forEach((jsonString) => {
+          jsonString = jsonString.trim()
+          // 检查切分的字符串是否为空
+          if (jsonString.length > 0) {
+            try {
+              const payload = JSON.parse(jsonString)
+              let payloadTemp = payload['choices'][0]
+              let sendChunk = payloadTemp['message'] ? payloadTemp['message']['content'] : payloadTemp['delta']['content']
+              sendChunk && webviewView.webview.postMessage({
+                command: 'response',
+                finished: false,
+                text: sendChunk
+              })
+            }catch(error){
+              console.log('Error:', error)
+            }   
+          }
+        })          
         return reader.read().then(processText)
       }).catch(reject)
     } catch (error) {
@@ -73,6 +78,7 @@ const processFetchResponse = (webviewView, response) => {
     }
   })
 }
+
 
 class CustomWebviewProvider {
   constructor(extensionUri) {
@@ -132,18 +138,22 @@ class CustomWebviewProvider {
         switch (message.command) {
           case 'fetch':
             abortController = new AbortController();
-            const url = endpoint + "/v1/chat/completions/";
+            const url = endpoint + "/chat/completions";
             const data = {
               max_tokens: maxTokens,
               temperature: temperature,
               stream: true,
               messages: JSON.parse(message.messages)
             };
-
+            if(model){
+              data.model = model
+            }
             const headers = {
               "Content-Type": "application/json"
             };
-    
+            if(apiKey){
+              headers["Authorization"] = "Bearer " + apiKey
+            }
             const response = await fetch(url, {
               method: 'POST',
               headers,
@@ -157,19 +167,13 @@ class CustomWebviewProvider {
               abortController.abort()
             }
             break
-          case 'backup':
-            const backupData = JSON.parse(message.messages);
-            console.log(backupData)
-            break
           default:
             break
         }
       } catch (error) {
         sendFinishMessage(webviewView);
-        console.error("Error:", error.message);
-        if (error.message.includes('fetch failed')) {
-          vscode.window.showErrorMessage("服务器连接失败，请检查服务器状态。")
-        }
+        console.error("Error:", error);
+        vscode.window.showErrorMessage("服务访问失败。")
       }
     });
   }

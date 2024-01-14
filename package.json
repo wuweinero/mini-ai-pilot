@@ -7,7 +7,7 @@
   },
   "icon": "logo.png",
   "publisher": "wuweinero",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -33,8 +33,18 @@
       "properties": {
         "mini-ai-pilot.endpoint": {
           "type": "string",
-          "default": "http://127.0.0.1:5000",
-          "description": "The endpoint for the completion API."
+          "default": "http://127.0.0.1:5000/v1",
+          "description": "The endpoint for the completion API. Either OpenAI or local LLM."
+        },
+        "mini-ai-pilot.api_key": {
+          "type": "string",
+          "default": "sk-XXXXXXXX",
+          "description": "Your own openai API key. Ignorable for local LLM."
+        },
+        "mini-ai-pilot.model": {
+          "type": "string",
+          "default": "gpt-3.5-turbo",
+          "description": "Model name selected for inference. Ignorable for local LLM."
         },
         "mini-ai-pilot.max_tokens": {
           "type": "number",
