@@ -1,28 +1,47 @@
-[English](./README_EN.md)
+# MINI AI COPILOT: An Intelligent Programming Assistant 
 
-# MINI AI COPILOT: A Smart Programming Assistant
+## Demo
+![Demo Gif](./demo.gif)
 
 ## Features
 
-- 支持任何兼容openai接口的本地LLM。
-- 完全支持中文交互。
-- 方便进行代码补全。
-- 提供AI聊天进行代码相关问答。
-- 支持选定代码片段的问答。
+- Works with any locally deployed Language Model (LLM), as long as it has an OpenAI compatible interface.
+- Fully supports interactions in Chinese.
+- Aids with code completion.
+- Provides AI-based assistance for discussions related to coding tasks.
+- Supports interactions about selected sections of code.
+
+## Installation
+
+- Search for "MINI AI PILOT" in the Visual Studio Code Extensions marketplace to initiate the installation process.
+- Establish a local LLM server with compatibility to OpenAI's API for seamless operations.
+
+## About Local LLM Server
+
+- You have the option to set up your own LLM server, as long as it maintains compatibility with OpenAI's interface.
+- In the near future, I plan to provide a version of the server that I have developed. This version will be packaged for easy download and immediate use. 
+
+## Usage
+
+After installation, you are ready to embark on your journey with MINI AI PILOT.
+
+- Code Completion: To enable this feature, press the hotkey "Alt + Q" or choose the "Auto Completion" option from the right-click context menu. Then, press "Tab" to input the code.
+- AI Chat: This feature can be accessed from the side menu. Additionally, you can select sections of code and post questions regarding them.
 
 ## Current Limitations
 
-- 单个输入的最大长度不能超过4000个字符。
+- The maximum length for a single input is capped at 4,000 characters.
 
-## User Guide
+## Future Enhancements
 
-- 代码补全：按alt+q快捷键，或从右键菜单中选择“自动补全”。之后，按“tab”进行输入。
-- AI聊天：从侧边菜单中访问此功能。您可以选择代码并对其进行查询。
+- Functionality to switch languages.
+- Online LLM support.
+- API key verification.
 
 ## Feedback and Support
 
-如有任何询问或建议，请通过wuwei_nero@163.com与我联系。
+For any suggestions or inquiries, please feel free to contact me at wuwei_nero@163.com.
 
 ## License
 
-本项目根据MIT许可证的条款授权。
+This project is licensed under the MIT License.
