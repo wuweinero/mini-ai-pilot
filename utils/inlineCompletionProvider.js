@@ -103,49 +103,50 @@ async function getCompletionText(document, position) {
   }
 }
 
-async function getCompletionTextGPT(document, position){
+async function getCompletionTextGPT(document, position) {
   let textBeforeCursor = document.getText(new vscode.Range(new vscode.Position(0, 0), position));
   textBeforeCursor = textBeforeCursor.length > maxLength ? textBeforeCursor.substr(textBeforeCursor.length - maxLength) : textBeforeCursor;
-  // 对焦点前面的文档进行预处理
   textBeforeCursor = preprocessDocument(textBeforeCursor);
-  // 使用chat/completions接口
   const url = endpoint + "/chat/completions";
   const messages = [
-    {"role": "system", "content": "No communication! Just continue writing the code provided by the user."},
-    {"role": "user", "content": textBeforeCursor}
+      { "role": "system", "content": "No communication! Just continue writing the code provided by the user." },
+      { "role": "user", "content": textBeforeCursor }
   ]
   const data = {
-    max_tokens: maxTokens,
-    temperature,
-    model,
-    stream: false,
-    messages
+      max_tokens: maxTokens,
+      temperature,
+      model,
+      stream: false,
+      messages,
+      stop: ["\n\n", "\r\r", "\r\n\r", "\n\r\n"]
   };
   const headers = {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ' + apiKey
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + apiKey
   }
   let text = "";
-  try{
-    const config = {
-      method: 'POST',
-      url,
-      headers,
-      data: JSON.stringify(data)
-    }
-    const response = await axios.request(config);
-    if (response && response.data && response.data.choices && response.data.choices.length > 0) {
-      text = response.data.choices[0].message.content
-      if (text.startsWith("```")) {
-        const textLines = text.split('\n');
-        text = textLines.slice(1, textLines.length - 1).join('\n');
+  try {
+      const config = {
+          method: 'POST',
+          url,
+          headers,
+          data: JSON.stringify(data)
       }
-    }
-  }catch(error){
-    console.log("Error:", error);
-    vscode.window.showErrorMessage("服务访问失败。")
+      const response = await axios.request(config);
+      if (response && response.data && response.data.choices && response.data.choices.length > 0) {
+          text = response.data.choices[0].message.content;
+          if (text.startsWith("```")) {
+              const textLines = text.split('\n');
+              const startIndex = textLines.findIndex(line => line.startsWith("```"));
+              const endIndex = textLines.slice(startIndex + 1).findIndex(line => line.startsWith("```"));
+              text = endIndex >= 0 ? textLines.slice(startIndex+1, startIndex+endIndex+1).join('\n') : textLines.slice(startIndex+1).join('\n');
+          }
+      }
+  } catch (error) {
+      console.log("Error:", error);
+      vscode.window.showErrorMessage("服务访问失败。");
   }
-  return text
+  return text;
 }
 
 function triggerInlineCompletion() {
