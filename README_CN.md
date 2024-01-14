@@ -1,4 +1,4 @@
-# MINI AI PILOT: 支持本地大模型的极简AI编程助手
+# MINI AI PILOT: 极简的AI编程助手
 
 ## 示例
 ![演示Gif](./demo.gif)
