@@ -8,7 +8,7 @@
 ## Features 🔥
 - Compatible with OpenAI API
 - Works with Local LLM
-- Provides code completion
+- Provides code completion with manual trigger
 - Includes chat functionality
 - Offers question and answer support for selected code
 - Compatible with Windows systems
