@@ -1,5 +1,7 @@
 # MINI AI PILOT: A Minimalist AI Programming Assistant That Supports Local Large Models
 
+[中文文档](./README_CN.md)
+
 ## Example
 ![Demonstration Gif](./demo.gif)
 
