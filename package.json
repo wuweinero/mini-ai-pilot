@@ -1,7 +1,7 @@
 {
   "name": "mini-ai-pilot",
   "displayName": "Mini AI Pilot",
-  "description": "A minimalist VS Code Copilot extension, working with a local LLM server.",
+  "description": "A minimalist AI Copilot.",
   "repository": {
     "url": "https://github.com/wuweinero/mini-ai-pilot"
   },
