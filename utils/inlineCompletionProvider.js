@@ -152,7 +152,7 @@ async function getCompletionTextDeepseek(document, position) {
   let config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: endpoint + '/v1/completions',
+    url: endpoint + '/completions',
     headers: {'Content-Type': 'application/json'},
     data: data
   };
