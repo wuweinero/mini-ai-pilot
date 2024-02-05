@@ -7,7 +7,7 @@
   },
   "icon": "logo.png",
   "publisher": "wuweinero",
-  "version": "1.1.6",
+  "version": "1.1.8",
   "engines": {
     "vscode": "^1.85.0"
   },

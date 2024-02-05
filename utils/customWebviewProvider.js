@@ -60,7 +60,7 @@ const processFetchResponse = (webviewView, response) => {
             try {
               const payload = JSON.parse(jsonString)
               let payloadTemp = payload['choices'][0]
-              let sendChunk = payloadTemp['message'] ? payloadTemp['message']['content'] : payloadTemp['delta']['content']
+              let sendChunk = payloadTemp['delta'] ? payloadTemp['delta']['content'] : payloadTemp['message']['content']
               sendChunk && webviewView.webview.postMessage({
                 command: 'response',
                 finished: false,
