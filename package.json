@@ -7,7 +7,7 @@
   },
   "icon": "logo.png",
   "publisher": "wuweinero",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -46,6 +46,11 @@
           "default": "default",
           "description": "Model name selected for inference(gpt-3.5-turbo, e.g.). Ignorable for local LLM."
         },
+        "mini-ai-pilot.context_length": {
+          "type": "number",
+          "default": 8096,
+          "description": "The maximum number of input characters for the completion API."
+        },
         "mini-ai-pilot.max_tokens": {
           "type": "number",
           "default": 2048,
@@ -62,12 +67,21 @@
       {
         "command": "extension.triggerInlineCompletion",
         "title": "Auto Completion"
+      },
+      {
+        "command": "extension.copySelectedCode",
+        "title": "Copy Selected Code"
       }
     ],
     "keybindings": [
       {
         "command": "extension.triggerInlineCompletion",
         "key": "alt+q",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.copySelectedCode",
+        "key": "alt+w",
         "when": "editorTextFocus"
       }
     ],
@@ -93,6 +107,10 @@
       "editor/context": [
         {
           "command": "extension.triggerInlineCompletion",
+          "group": "z"
+        },
+        {
+          "command": "extension.copySelectedCode",
           "group": "z"
         }
       ]

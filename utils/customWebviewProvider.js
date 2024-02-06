@@ -8,7 +8,7 @@ let apiKey = config.get('api_key')
 let model = config.get('model')
 let maxTokens = config.get('max_tokens');
 let temperature = config.get('temperature');
-let maxLength = 4000;
+let maxLength = config.get('context_length');
 let abortController = null;
 
 const loadWebviewHtml = (webviewView, extensionUri) => {
@@ -83,54 +83,43 @@ const processFetchResponse = (webviewView, response) => {
 class CustomWebviewProvider {
   constructor(extensionUri) {
     this._extensionUri = extensionUri;
+    this._webview = null
   }
 
-  sendSelectMessage(webviewView, selectedText) {
+  sendSelectMessage() {
     const activeEditor = vscode.window.activeTextEditor;
     let languageId = '';
     if (activeEditor) {
       languageId = activeEditor.document.languageId;
     }
+    let selectedText = activeEditor.document.getText(activeEditor.selection);
     // 缩短selectedText的长度
     if (selectedText.length > maxLength - 100) {
       selectedText = selectedText.substring(0, maxLength - 100);
     }
     const formattedCode = '```' + languageId + '\r\n' + selectedText + '\r\n```';
-    webviewView.webview.postMessage({
+    this._webview.webview.postMessage({
       command: 'select',
       text: selectedText ? formattedCode : ''
     })
   }
 
-  saveSelectionChanges(webviewView) {
-    const activeEditor = vscode.window.activeTextEditor;
-    if (activeEditor) {
-      this.selectionChangeListener = vscode.window.onDidChangeTextEditorSelection(e => {
-        if (e.textEditor === activeEditor) {
-          const selectedText = activeEditor.document.getText(e.selections[0]);
-          this.sendSelectMessage(webviewView, selectedText);
-        }
-      });
-    }
-  }
-
   resolveWebviewView(webviewView) {
+    this._webview = webviewView
     loadWebviewHtml(webviewView, this._extensionUri);
-    webviewView.webview.postMessage({ command: 'reload' });
+    webviewView.webview.postMessage({ command: 'reload', maxLength});
     
     webviewView.onDidChangeVisibility(() => {
       if (webviewView.visible) {
-        webviewView.webview.postMessage({ command: 'reload' });
+        webviewView.webview.postMessage({ command: 'reload', maxLength});
       }
     });
 
-    this.saveSelectionChanges(webviewView);
     vscode.window.onDidChangeActiveTextEditor(() => {
       //当活动编辑器发生变化时，移除旧的监听器并添加新的
       if (this.selectionChangeListener) {
         this.selectionChangeListener.dispose();
       }
-      this.saveSelectionChanges(webviewView);
     });
 
     webviewView.webview.onDidReceiveMessage(async (message) => {

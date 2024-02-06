@@ -23,11 +23,9 @@
 
 ## Usage 🚀 
 - Code completion: Press the hotkey "Alt + Q" or select the "AutoComplete" option from the right-click menu. Then, press "Tab" to enter the code.
-- AI chat: This feature can be accessed from the sidebar menu. Additionally, you can select a code segment and question it.
+- AI chat: This feature can be accessed from the sidebar menu. Additionally, you can select a snippet of code, press Alt+W or right-click and choose 'Copy Selected Code' to automatically copy it to the question box on the left and ask about it.
 
-## Common QAs
-#### Q: What is the character or token limit per query?
-A: The maximum length of a single input is 4000 characters in the chat mode. Characters exceeding 4000 will be automatically truncated in the code completion mode.
+## Q&A
 #### Q: What system requirements does my computer need to meet to deploy a local LLM?
 A: In the author's tests, the 1.3B model can be used without any pressure with just 4G of VRAM. If your computer has lower specifications, you can modify the 36 after the n-gpu-layers in CMD_FLAGS.txt to 0, which will completely use the CPU for inference, but note that this will significantly reduce the speed.
 #### Q: Why does code completion seem slower than Q&A?

@@ -7,7 +7,7 @@ let apiKey = config.get('api_key')
 let model = config.get('model')
 let temperature = config.get('temperature');
 let maxTokens = config.get('max_tokens');
-let maxLength = 4000;
+let maxLength = config.get('context_length');
 let shouldProvideCompletion = false;
 
 async function provideInlineCompletionItems(document, position, context, token) {
@@ -76,7 +76,7 @@ async function getCompletionText(document, position) {
 
   let data = {
     "prompt": prompt,
-    "max_tokens": 256,
+    "max_tokens": maxTokens,
     "temperature": temperature,
     "stream": false,
     "stop": stop
@@ -118,7 +118,7 @@ async function getCompletionTextGPT(document, position) {
       { "role": "user", "content": textBeforeCursor }
   ]
   const data = {
-      max_tokens: 256,
+      max_tokens: maxTokens,
       temperature,
       model,
       stream: false,

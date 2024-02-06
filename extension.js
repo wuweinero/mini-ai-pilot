@@ -7,24 +7,22 @@ function activate(context) {
     const languages = ['javascript', 'python', 'java', 'csharp', 'cpp', 'vue', 'html', 'css', 'typescript', 'javascriptreact'];
     let disposables = languages.map(language => {
         return vscode.languages.registerInlineCompletionItemProvider(
-            language,
-            {
-                provideInlineCompletionItems
-            }
+            language, { provideInlineCompletionItems }
         );
     });
     disposables.forEach(disposable => context.subscriptions.push(disposable));
-
     let commandDisposable = vscode.commands.registerCommand('extension.triggerInlineCompletion', triggerInlineCompletion);
-
     context.subscriptions.push(commandDisposable);
 
+    const customWebviewProvider = new CustomWebviewProvider(context.extensionUri);
     context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider(
-            'sideView',
-            new CustomWebviewProvider(context.extensionUri)
-        )
+        vscode.window.registerWebviewViewProvider('sideView', customWebviewProvider)
     );
+
+    let sendSelectedCodeDisposable = vscode.commands.registerCommand('extension.copySelectedCode', () => {
+        customWebviewProvider.sendSelectMessage();
+    });
+    context.subscriptions.push(sendSelectedCodeDisposable);
 }
 
 function deactivate() {}
