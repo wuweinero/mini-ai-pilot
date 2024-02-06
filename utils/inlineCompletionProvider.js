@@ -15,9 +15,7 @@ async function provideInlineCompletionItems(document, position, context, token) 
     return undefined;
   }
   let text = ''
-  if (model.startsWith('deepseek')){
-    text = await getCompletionTextDeepseek(document, position)
-  }else if(model.startsWith('gpt') && endpoint.startsWith("https://api")){
+  if(model.startsWith('gpt')){
     text = await getCompletionTextGPT(document, position)
   }else{
     text = await getCompletionText(document, position)
@@ -97,64 +95,6 @@ async function getCompletionText(document, position) {
     url: endpoint + '/completions',
     headers,
     data: JSON.stringify(data)
-  };
-
-  try {
-    const response = await axios.request(config);
-    if (response && response.data && response.data.choices && response.data.choices.length > 0) {
-      return response.data.choices[0].text.replace(/[\r\n]+$/g, '');
-    }
-  } catch (error) {
-    console.log("Error:", error.message);
-    vscode.window.showErrorMessage("服务访问失败。")
-  }
-}
-
-async function getCompletionTextDeepseek(document, position) {
-  let language = document.languageId;
-  let textBeforeCursor = document.getText(new vscode.Range(new vscode.Position(0, 0), position));
-  let textAfterCursor = document.getText(new vscode.Range(position, new vscode.Position(document.lineCount, 0)));
-  const maxLengthBeforeCursor = textAfterCursor ? maxLength / 2 : maxLength;
-
-  textBeforeCursor = textBeforeCursor.length > maxLengthBeforeCursor ? textBeforeCursor.substr(textBeforeCursor.length - maxLengthBeforeCursor) : textBeforeCursor;
-  if (textAfterCursor && textAfterCursor.length > maxLength / 2) {
-    textAfterCursor = textAfterCursor.substr(0, maxLength / 2);
-  }
-  
-  // 对焦点前面的文档进行预处理
-  textBeforeCursor = preprocessDocument(textBeforeCursor);
-
-  let prompt = "";
-  let stop = ["\n\n", "\r\r", "\r\n\r", "\n\r\n", "```"];
-  
-  let lineContent = document.lineAt(position.line).text;
-  let leftOfCursor = lineContent.substr(0, position.character).trim();
-  if (leftOfCursor !== '') {
-    stop.push('\r\n');
-  }
-
-  if (textBeforeCursor && textAfterCursor) {
-    prompt = "```" + language + "\r\n<｜fim▁begin｜>" + textBeforeCursor + "<｜fim▁hole｜>" + textAfterCursor + "<｜fim▁end｜>";
-  } else if (textBeforeCursor) {
-    prompt = "```" + language + "\r\n" + textBeforeCursor;
-  } else {
-    return;
-  }
-
-  let data = JSON.stringify({
-    "prompt": prompt,
-    "max_tokens": 256,
-    "temperature": temperature,
-    "stream": false,
-    "stop": stop
-  });
-
-  let config = {
-    method: 'post',
-    maxBodyLength: Infinity,
-    url: endpoint + '/completions',
-    headers: {'Content-Type': 'application/json'},
-    data: data
   };
 
   try {

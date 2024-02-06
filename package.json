@@ -7,7 +7,7 @@
   },
   "icon": "logo.png",
   "publisher": "wuweinero",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -43,7 +43,7 @@
         },
         "mini-ai-pilot.model": {
           "type": "string",
-          "default": "deepseek-coder",
+          "default": "default",
           "description": "Model name selected for inference(gpt-3.5-turbo, e.g.). Ignorable for local LLM."
         },
         "mini-ai-pilot.max_tokens": {

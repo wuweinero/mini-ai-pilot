@@ -173,7 +173,6 @@ class CustomWebviewProvider {
       } catch (error) {
         sendFinishMessage(webviewView);
         console.error("Error:", error);
-        vscode.window.showErrorMessage("服务访问失败。")
       }
     });
   }
