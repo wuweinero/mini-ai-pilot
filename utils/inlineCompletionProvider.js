@@ -74,6 +74,8 @@ async function getCompletionText(document, position) {
     return;
   }
 
+  console.log(prompt)
+
   let data = {
     "prompt": prompt,
     "max_tokens": maxTokens,

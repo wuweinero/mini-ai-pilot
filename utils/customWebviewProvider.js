@@ -41,43 +41,49 @@ const sendFinishMessage = (webviewView) => {
 const processFetchResponse = (webviewView, response) => {
   return new Promise((resolve, reject) => {
     try {
-      const reader = response.body.getReader()
-      let decoder = new TextDecoder('utf-8')
+      const reader = response.body.getReader();
+      let decoder = new TextDecoder('utf-8');
 
       reader.read().then(function processText({ done, value }) {
         if (done) {
-          sendFinishMessage(webviewView)
-          resolve()
-          return
+          sendFinishMessage(webviewView);
+          resolve();
+          return;
         }
-        let chunk = decoder.decode(value)
-        // 使用 'data:'的切分
+        let chunk = decoder.decode(value, { stream: true });
+        
+        // 使用 'data:' 的切分
         let chunkArray = chunk.split("data:");
-        chunkArray.forEach((jsonString) => {
-          jsonString = jsonString.trim()
-          // 检查切分的字符串是否为空
-          if (jsonString.length > 0) {
+        
+        for (let jsonString of chunkArray) {
+          jsonString = jsonString.trim();
+          if (jsonString === '[DONE]') {
+            sendFinishMessage(webviewView);
+            resolve();
+            return; // 退出循环和processText函数
+          }
+          else if (jsonString.length > 0) {
             try {
-              const payload = JSON.parse(jsonString)
-              let payloadTemp = payload['choices'][0]
-              let sendChunk = payloadTemp['delta'] ? payloadTemp['delta']['content'] : payloadTemp['message']['content']
+              const payload = JSON.parse(jsonString);
+              let payloadTemp = payload['choices'][0];
+              let sendChunk = payloadTemp['delta'] ? payloadTemp['delta']['content'] : payloadTemp['message']['content'];
               sendChunk && webviewView.webview.postMessage({
                 command: 'response',
                 finished: false,
-                text: sendChunk
-              })
-            }catch(error){
-              console.log('Error:', error)
-            }   
+                text: sendChunk,
+              });
+            } catch (error) {
+              console.log('Error:', error);
+            }
           }
-        })          
-        return reader.read().then(processText)
-      }).catch(reject)
+        }
+        return reader.read().then(processText);
+      }).catch(reject);
     } catch (error) {
-      reject(error)
+      reject(error);
     }
-  })
-}
+  });
+};
 
 
 class CustomWebviewProvider {
