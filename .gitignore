@@ -1,4 +1,4 @@
 node_modules
 .vscode-test/
 *.vsix
-chat-layout
+chat-layout/node_modules
