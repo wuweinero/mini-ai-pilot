@@ -6,7 +6,7 @@
             :maxlength="maxlength" :auto-size="{maxRows: 5}"
             style="width:88vw; margin:0 12px;"
             @keydown="handleKeydown" ref="textArea"/>
-      <SendOutlined v-if="!isFetching" @click="sendMessage" style="font-size: 20px;" />
+      <SendOutlined v-if="!isFetching" @click="sendMessage(false)" style="font-size: 20px;" />
       <PauseCircleOutlined v-else @click="abortFetching" style="font-size: 20px;" />
     </div>
     
