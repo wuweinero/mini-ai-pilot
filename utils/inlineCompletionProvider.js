@@ -153,6 +153,7 @@ async function getCompletionTextGPT(document, position) {
       console.log("Error:", error);
       vscode.window.showErrorMessage("服务访问失败。");
   }
+  text = text.trimStart();
   return text;
 }
 
