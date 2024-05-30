@@ -1,8 +1,5 @@
 # MINI AI PILOT: 极简的AI编程助手
 
-## 示例
-![演示Gif](./demo.gif)
-
 ## 特性 🔥
 - 支持Openai、ollama
 - 支持chat
