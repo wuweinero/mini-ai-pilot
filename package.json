@@ -7,25 +7,14 @@
   },
   "icon": "logo.png",
   "publisher": "wuweinero",
-  "version": "1.2.3",
+  "version": "2.0.1",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onLanguage:javascript",
-    "onLanguage:python",
-    "onLanguage:java",
-    "onLanguage:csharp",
-    "onLanguage:cpp",
-    "onLanguage:vue",
-    "onLanguage:html",
-    "onLanguage:css",
-    "onLanguage:typescript",
-    "onLanguage:javascriptreact"
-  ],
+  "activationEvents": [],
   "main": "./extension.js",
   "contributes": {
     "configuration": {
@@ -33,58 +22,36 @@
       "properties": {
         "mini-ai-pilot.endpoint": {
           "type": "string",
-          "default": "http://127.0.0.1:5000/v1",
+          "default": "http://127.0.0.1:11434/v1",
           "description": "The endpoint for the completion API. Either OpenAI or local LLM."
         },
         "mini-ai-pilot.api_key": {
           "type": "string",
-          "default": "default",
-          "description": "Your own openai API key(sk-xxx, e.g.). Ignorable for local LLM."
+          "default": "ollama",
+          "description": "Your own openai API key(sk-xxx, e.g.)"
         },
         "mini-ai-pilot.model": {
           "type": "string",
-          "default": "default",
-          "description": "Model name selected for inference(gpt-3.5-turbo, e.g.). Ignorable for local LLM."
+          "default": "yi:9b-chat-v1.5-q8_0",
+          "description": "Model name selected for inference(gpt-3.5-turbo, e.g.)"
         },
         "mini-ai-pilot.context_length": {
           "type": "number",
-          "default": 8192,
+          "default": 20480,
           "description": "The maximum number of input characters for the completion API."
         },
         "mini-ai-pilot.max_tokens": {
           "type": "number",
-          "default": 2048,
+          "default": 4096,
           "description": "The maximum number of output tokens for the completion API."
         },
         "mini-ai-pilot.temperature": {
           "type": "number",
-          "default": 0.5,
+          "default": 0.7,
           "description": "The randomness level of output generation. A higher value leads to more random outputs."
         }
       }
     },
-    "commands": [
-      {
-        "command": "extension.triggerInlineCompletion",
-        "title": "Auto Completion"
-      },
-      {
-        "command": "extension.copySelectedCode",
-        "title": "Copy Selected Code"
-      }
-    ],
-    "keybindings": [
-      {
-        "command": "extension.triggerInlineCompletion",
-        "key": "alt+q",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "extension.copySelectedCode",
-        "key": "alt+w",
-        "when": "editorTextFocus"
-      }
-    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -100,18 +67,6 @@
           "id": "sideView",
           "name": "",
           "type": "webview"
-        }
-      ]
-    },
-    "menus": {
-      "editor/context": [
-        {
-          "command": "extension.triggerInlineCompletion",
-          "group": "z"
-        },
-        {
-          "command": "extension.copySelectedCode",
-          "group": "z"
         }
       ]
     }
