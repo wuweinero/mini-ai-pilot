@@ -7,8 +7,9 @@
 
 ## 安装 ⬇️
 - 在Visual Studio Code扩展市场中搜索 "Mini AI Pilot", 点击安装。
-- 方法1：部署一个与OpenAI的API兼容的本地LLM服务器，建议使用ollama进行部署。
-- 方法2：使用openai的api，这需要您获取一个api key，然后在插件设置中进行相应的配置即可。
+- 方法1：使用ollama进行部署。
+- 方法2：使用openai兼容的api。
+- 无论使用以上哪种方法，都需要修改插件设置，替换BaseUrl、ApiKey和model等信息。
 
 ## 使用 🚀
 - AI聊天: 该功能可以从侧边栏菜单中访问。

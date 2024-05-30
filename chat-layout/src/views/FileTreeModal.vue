@@ -20,7 +20,7 @@
         </a-list>
         <template v-if="clickedFiles.length > 0">
           <a-button type="primary" @click="clearAll" style="margin-top: 10px; display: block; margin-left: auto; margin-right: auto;">
-            <DeleteOutlined /> 全部删除
+            <DeleteOutlined /> 清空上下文
           </a-button>
         </template>
       </div>
