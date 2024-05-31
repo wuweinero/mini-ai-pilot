@@ -62,13 +62,31 @@ class CustomWebviewProvider {
             if (apiKey) {
               headers["Authorization"] = "Bearer " + apiKey;
             }
-            const response = await fetch(url, {
-              method: 'POST',
-              headers,
-              body: JSON.stringify(data),
-              signal: abortController.signal
-            });
-            await processFetchResponse(webviewView, response);
+            try {
+              const response = await fetch(url, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(data),
+                signal: abortController.signal
+              });
+              if (!response.ok) {
+                const errorMessage = await response.text();
+                webviewView.webview.postMessage({
+                  command: 'response',
+                  finished: true,
+                  text: errorMessage
+                });
+                return;
+              }
+              await processFetchResponse(webviewView, response);
+            } catch (error) {
+              webviewView.webview.postMessage({
+                command: 'response',
+                finished: true,
+                text: error.message
+              });
+              console.error("Error:", error);
+            }
             break;
           case 'abort':
             if (abortController) {
