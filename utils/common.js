@@ -147,22 +147,58 @@ const generateSystemInstructions = async (filePaths) => {
   }
   
   try {
-    const fileContents = await Promise.all(filePaths.map(async (filePath) => {
+    const txtAndMdFiles = [];
+    const otherFiles = [];
+    
+    // 分离txt和md文件与其他文件
+    filePaths.forEach(filePath => {
+      const fileExtension = filePath.split('.').pop();
+      if (['txt', 'md'].includes(fileExtension)) {
+        txtAndMdFiles.push(filePath);
+      } else {
+        otherFiles.push(filePath);
+      }
+    });
+    
+    // 读取非txt和md文件的内容
+    const otherFileContents = await Promise.all(otherFiles.map(async (filePath) => {
       const content = await getContent(filePath);
       if (content) {
         const fileExtension = filePath.split('.').pop();
-        return `// ${filePath}\n\`\`\`${fileExtension}\n${content}\n\`\`\``;
+        return `// ${filePath}\n\`\`\`${fileExtension}\n${content}\n\`\`\`` + '\n\n';
       }
       return null;
     }));
     
-    const validContents = fileContents.filter(Boolean).join('\n\n');
-    return validContents ? validContents + '\n\n' + defaultInstruction : defaultInstruction;
+    // 读取txt和md文件的内容
+    const txtAndMdFileContents = await Promise.all(txtAndMdFiles.map(async (filePath) => {
+      const content = await getContent(filePath);
+      if (content) {
+        return content + '\n\n';
+      }
+      return null;
+    }));
+    
+    // 合并所有文件的内容
+    const validOtherContents = otherFileContents.filter(Boolean).join('');
+    const validTxtAndMdContents = txtAndMdFileContents.filter(Boolean).join('');
+    
+    // 生成最终的指令
+    const finalInstructions = validOtherContents + validTxtAndMdContents;
+    
+    // 如果没有txt和md文件内容，添加默认指令
+    if (txtAndMdFiles.length === 0) {
+      return finalInstructions + defaultInstruction;
+    }
+    
+    return finalInstructions;
   } catch (error) {
     console.error('Error generating system instructions:', error);
     return defaultInstruction;
   }
 };
+
+
 
 module.exports = {
   loadWebviewHtml,

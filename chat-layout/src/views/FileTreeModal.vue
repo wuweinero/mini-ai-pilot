@@ -18,11 +18,14 @@
             </template>
           </a-list-item>
         </a-list>
-        <template v-if="clickedFiles.length > 0">
-          <a-button type="primary" @click="clearAll" style="margin-top: 10px; display: block; margin-left: auto; margin-right: auto;">
+        <div style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+          <a-button type="primary" @click="clearAll">
             <DeleteOutlined /> 清空上下文
           </a-button>
-        </template>
+          <a-button type="primary" danger @click="handleCancel">
+            <CloseOutlined /> 关闭
+          </a-button>
+        </div>
       </div>
     </div>
   </a-modal>
@@ -30,7 +33,7 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import { UpOutlined, DownOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+import { UpOutlined, DownOutlined, DeleteOutlined, CloseOutlined } from '@ant-design/icons-vue';
 import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
@@ -68,9 +71,9 @@ watch(() => props.treeData, (newVal) => {
 
 function formatTreeData(data) {
   return data.map(item => {
-    const formattedItem = { 
-      title: item.name, 
-      key: item.key 
+    const formattedItem = {
+      title: item.name,
+      key: item.key
     };
     if (item.isFolder && item.children && item.children.length) {
       formattedItem.children = formatTreeData(item.children);
@@ -123,7 +126,6 @@ const removeFile = (index) => {
 const clearAll = () => {
   emit('update:clickedFiles', []);
 };
-
 </script>
 
 <style scoped>
