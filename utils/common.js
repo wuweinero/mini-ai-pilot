@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const EXCLUDED_FOLDERS = ['node_modules', 'venv', '.git'];
-const INCLUDED_EXTENSIONS = ['js', 'py', 'css', 'cs', 'xaml', 'json', 'xml', 'jsx', 'vue'];
+const INCLUDED_EXTENSIONS = ['js', 'py', 'css', 'cs', 'xaml', 'json', 'xml', 'jsx', 'vue', 'md', 'html', 'ts', 'cpp', 'c', 'java', 'yml', 'yaml', 'txt', 'm'];
 
 const loadWebviewHtml = (webviewView, extensionUri) => {
   webviewView.webview.options = {
