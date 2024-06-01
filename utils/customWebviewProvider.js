@@ -32,6 +32,7 @@ class CustomWebviewProvider {
 
     webviewView.webview.onDidReceiveMessage(async (message) => {
       try {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
         switch (message.command) {
           case 'fetch':
             const newMessages = JSON.parse(message.messages);
@@ -94,13 +95,23 @@ class CustomWebviewProvider {
             }
             break;
           case 'files':
-            const workspaceFolders = vscode.workspace.workspaceFolders;
             if (workspaceFolders) {
               const folderUri = workspaceFolders[0].uri;
               const files = await listFiles(folderUri);
               const structuredFiles = structureFiles(files);
               webviewView.webview.postMessage({ command: 'files', files: JSON.stringify(structuredFiles) });
             }
+            break;
+          case 'currentFile':
+            const activeEditor = vscode.window.activeTextEditor;
+            let currentFile = '';
+            if (workspaceFolders && activeEditor) {
+              const folderUri = workspaceFolders[0].uri;
+              const activeFilePath = activeEditor.document.uri.fsPath;
+              currentFile = path.relative(folderUri.fsPath, activeFilePath).replace(/\\/g, '/');
+              console.log(currentFile)
+            }
+            webviewView.webview.postMessage({ command: 'currentFile', currentFile });
             break;
           case 'systemPrompt':
             const clickedFiles = JSON.parse(message.clickedFiles);

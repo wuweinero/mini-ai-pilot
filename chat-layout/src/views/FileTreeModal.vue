@@ -33,7 +33,7 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import { UpOutlined, DownOutlined, DeleteOutlined, CloseOutlined } from '@ant-design/icons-vue';
+import { UpOutlined, DownOutlined, DeleteOutlined, CloseOutlined, SettingOutlined } from '@ant-design/icons-vue';
 import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({

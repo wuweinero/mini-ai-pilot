@@ -1,14 +1,28 @@
 <template>
   <div>
     <div class="quesiton-box">
-      <SettingOutlined @click="openSettings" style="font-size: 20px; margin-right: 12px;" />
-      <ClearOutlined @click="clearHistory" style="font-size: 20px;" />
+      <a-tooltip title="快速上下文">
+        <FireOutlined @click="instantSetting" style="font-size: 20px; margin-right: 12px;" />
+      </a-tooltip>
+      <a-tooltip title="设置上下文">
+        <SettingOutlined @click="openSettings" style="font-size: 20px; margin-right: 12px;" />
+      </a-tooltip>
+      <a-tooltip title="清空上下文">
+        <StopOutlined @click="clearContext" style="font-size: 20px; margin-right: 12px;" />
+      </a-tooltip>
+      <a-tooltip title="清除聊天">
+        <ClearOutlined @click="clearHistory" style="font-size: 20px;" />
+      </a-tooltip>
       <a-textarea v-model:value="userMessage" placeholder="Enter发送, Shift+Enter换行" 
             :auto-size="{maxRows: 5}"
             style="width:80vw; margin:0 12px;"
             @keydown="handleKeydown" ref="textArea"/>
-      <SendOutlined v-if="!isFetching" @click="sendMessage(false)" style="font-size: 20px;" />
-      <PauseCircleOutlined v-else @click="abortFetching" style="font-size: 20px;" />
+      <a-tooltip v-if="!isFetching" title="发送消息">
+        <SendOutlined @click="sendMessage(false)" style="font-size: 20px;" />
+      </a-tooltip>
+      <a-tooltip v-else title="取消发送">
+        <PauseCircleOutlined @click="abortFetching" style="font-size: 20px;" />
+      </a-tooltip>
     </div>
     
     <div class="display-box" v-if="history.length > 0" ref="displayBox">
@@ -34,9 +48,19 @@
           </template>
           
           <template #actions>
+            <span key="comment-basic-like" v-if="message.role !== 'system'">
+              <a-tooltip title="删除">
+                <DeleteOutlined style="font-size: 16px;" @click="deleteMessage(index)"/>
+              </a-tooltip>
+            </span>
             <span key="comment-basic-like">
               <a-tooltip title="复制">
                 <CopyOutlined style="font-size: 16px;" @click="copyContent(message.content)"/>
+              </a-tooltip>
+            </span>
+            <span key="comment-basic-like" v-if="message.role !== 'system'">
+              <a-tooltip title="复制至此">
+                <FileTextOutlined style="font-size: 16px;" @click="copyToHere(index)"/>
               </a-tooltip>
             </span>
             <span key="comment-basic-dislike" v-if="message.role === 'assistant' && index === history.length - 1">
@@ -56,7 +80,7 @@
     <FileTreeModal 
       :visible="isModalVisible" 
       :treeData="fileTreeData" 
-      :clickedFiles="clickedFiles" 
+      :clickedFiles="clickedFiles"
       @update:visible="isModalVisible = $event"
       @update:clickedFiles="clickedFiles = $event"
     />
@@ -65,7 +89,7 @@
 
 <script setup>
 import { ref, nextTick, watch, onMounted } from 'vue';
-import { SendOutlined, PauseCircleOutlined, ClearOutlined, CopyOutlined, RedoOutlined, SettingOutlined } from '@ant-design/icons-vue';
+import { SendOutlined, PauseCircleOutlined, ClearOutlined, CopyOutlined, RedoOutlined, FireOutlined, SettingOutlined, DeleteOutlined, FileTextOutlined, StopOutlined } from '@ant-design/icons-vue';
 import { Empty, message } from 'ant-design-vue';
 import FileTreeModal from './FileTreeModal.vue';
 
@@ -98,10 +122,19 @@ const isModalVisible = ref(false);
 const fileTreeData = ref([]);
 const clickedFiles = ref([]);
 
+const instantSetting = () => {
+  vscode.postMessage({ command: 'currentFile' });
+}
+
 const openSettings = () => {
   vscode.postMessage({ command: 'files' });
   isModalVisible.value = true;
 };
+
+const clearContext = () => {
+  clickedFiles.value = [];
+  updateSystemPrompt();
+}
 
 const clearHistory = () => {
   history.value = history.value.filter((msg) => msg.role === 'system');
@@ -109,6 +142,22 @@ const clearHistory = () => {
 };
 
 const copyContent = (content) => {
+  navigator.clipboard.writeText(content).then(function () {
+    message.info('复制成功');
+  }, function (err) {
+    console.error('无法复制内容: ', err);
+  });
+};
+
+const deleteMessage = (index) => {
+  history.value.splice(index, 1);
+};
+
+const copyToHere = (index) => {
+  let content = '';
+  for (let i = 0; i <= index; i++) {
+    content += history.value[i].content + '\n\n';
+  }
   navigator.clipboard.writeText(content).then(function () {
     message.info('复制成功');
   }, function (err) {
@@ -181,6 +230,11 @@ onMounted(() => {
         updateClickedFiles();
         break;
       }
+      case 'currentFile': {
+        clickedFiles.value = data.currentFile ? [data.currentFile] : [];
+        updateSystemPrompt();
+        break;
+      }
       case 'systemPrompt': {
         const { prompt } = data;
         if (history.value.length === 0) {
@@ -230,6 +284,7 @@ const updateClickedFiles = () => {
   const allKeys = flattenFileTree(fileTreeData.value);
   clickedFiles.value = clickedFiles.value.filter(key => allKeys.includes(key));
 };
+
 </script>
 
 <style scoped>
