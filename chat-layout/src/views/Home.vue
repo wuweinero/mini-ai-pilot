@@ -43,7 +43,7 @@
           </template>
           
           <template #content>
-            <MdPreview v-if="message.role !== 'user'" :modelValue="message.content" theme="dark" />
+            <MdPreview v-if="message.role !== 'user'" :modelValue="message.content" theme="dark" :codeFoldable="false" />
             <pre v-else class="pre-container">{{ message.content }}</pre>
           </template>
           

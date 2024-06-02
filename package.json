@@ -7,7 +7,7 @@
   },
   "icon": "logo.png",
   "publisher": "wuweinero",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -32,7 +32,7 @@
         },
         "mini-ai-pilot.model": {
           "type": "string",
-          "default": "yi:9b-chat-v1.5-q8_0",
+          "default": "llama3:8b",
           "description": "Model name selected for inference(gpt-3.5-turbo, e.g.)"
         },
         "mini-ai-pilot.context_length": {
