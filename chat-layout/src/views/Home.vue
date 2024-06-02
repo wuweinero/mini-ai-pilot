@@ -1,29 +1,39 @@
 <template>
   <div>
-    <div class="quesiton-box">
-      <a-tooltip title="快速上下文">
-        <FireOutlined @click="instantSetting" style="font-size: 20px; margin-right: 12px;" />
-      </a-tooltip>
-      <a-tooltip title="设置上下文">
-        <SettingOutlined @click="openSettings" style="font-size: 20px; margin-right: 12px;" />
-      </a-tooltip>
-      <a-tooltip title="清除全部">
-        <StopOutlined @click="clearContext" style="font-size: 20px; margin-right: 12px;" />
-      </a-tooltip>
-      <a-tooltip title="清除聊天">
-        <ClearOutlined @click="clearHistory" style="font-size: 20px;" />
-      </a-tooltip>
-      <a-textarea v-model:value="userMessage" placeholder="Enter发送, Shift+Enter换行" 
-            :auto-size="{maxRows: 5}"
-            style="width:80vw; margin:0 12px;"
-            @keydown="handleKeydown" ref="textArea"/>
-      <a-tooltip v-if="!isFetching" title="发送消息">
-        <SendOutlined @click="sendMessage(false)" style="font-size: 20px;" />
-      </a-tooltip>
-      <a-tooltip v-else title="取消发送">
-        <PauseCircleOutlined @click="abortFetching" style="font-size: 20px;" />
-      </a-tooltip>
+    <div class="bottom-box">
+      <div class="mode-box">
+        <a-tooltip title="快速上下文">
+          <FireOutlined @click="instantSetting" style="font-size: 20px; margin-right: 12px;" />
+        </a-tooltip>
+        <a-tooltip title="设置上下文">
+          <SettingOutlined @click="openSettings" style="font-size: 20px; margin-right: 12px;" />
+        </a-tooltip>
+        <a-tooltip title="清除全部">
+          <StopOutlined @click="clearContext" style="font-size: 20px; margin-right: 12px;" />
+        </a-tooltip>
+        <a-tooltip title="清除聊天">
+          <ClearOutlined @click="clearHistory" style="font-size: 20px; margin-right: 12px;" />
+        </a-tooltip>
+        <a-select v-model:value="selectedMode" style="width: 100px;">
+          <a-select-option value="默认">默认</a-select-option>
+          <a-select-option value="完整代码">完整代码</a-select-option>
+          <a-select-option value="片段修改">片段修改</a-select-option>
+        </a-select>
+      </div>
+      <div class="question-box">
+        <a-textarea v-model:value="userMessage" placeholder="Enter发送, Shift+Enter换行" 
+              :auto-size="{maxRows: 5, minRows: 1}"
+              style="flex:1; margin:0 12px;"
+              @keydown="handleKeydown" ref="textArea"/>
+        <a-tooltip v-if="!isFetching" title="发送消息">
+          <SendOutlined @click="sendMessage(false)" style="font-size: 20px;" />
+        </a-tooltip>
+        <a-tooltip v-else title="取消发送">
+          <PauseCircleOutlined @click="abortFetching" style="font-size: 20px;" />
+        </a-tooltip>
+      </div>
     </div>
+    
     
     <div class="display-box" v-if="history.length > 0" ref="displayBox">
       <template v-for="(message, index) in history" :key="index">
@@ -121,6 +131,7 @@ const isFetching = ref(false);
 const isModalVisible = ref(false);
 const fileTreeData = ref([]);
 const clickedFiles = ref([]);
+const selectedMode = ref("默认");
 
 const instantSetting = () => {
   vscode.postMessage({ command: 'currentFile' });
@@ -170,7 +181,13 @@ const sendMessage = (reflag) => {
   if (isFetching.value) return;
   if (!reflag) {
     if (!userMessage.value) return;
-    history.value.push({ role: 'user', content: userMessage.value });
+    let content = userMessage.value;
+    if (selectedMode.value.includes('完整')) {
+      content += `\n\n请生成完整的代码。`;
+    }else if(selectedMode.value.includes('片段')){
+      content += `\n\n只需要告诉我应该怎么修改，不需要生成完整的代码。`;
+    }
+    history.value.push({ role: 'user', content: content });
     userMessage.value = '';
   } else {
     history.value.pop();
@@ -288,28 +305,38 @@ const updateClickedFiles = () => {
 </script>
 
 <style scoped>
-.quesiton-box {
-  padding: 0 24px;
+.bottom-box {
+  padding: 0 24px 0 12px;
   position: absolute;
   width: 100%;
-  bottom: 36px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  bottom: 30px;
   z-index: 999;
+  height: 72px;
+}
+
+.mode-box {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-left: 12px;
+}
+
+.question-box {
+  display: flex;
+  align-items: center;
 }
 
 .display-box {
   padding: 12px 24px;
   overflow: auto;
-  height: calc(100vh - 84px);
+  height: calc(100vh - 120px);
 }
 
 .empty-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 84px);
+  height: calc(100vh - 120px);
 }
 
 .pre-container {
