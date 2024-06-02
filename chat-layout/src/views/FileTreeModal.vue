@@ -1,6 +1,6 @@
 <template>
   <a-modal v-model:visible="isVisible" title="上下文" @cancel="handleCancel" width="90vw" :footer="null">
-    <div style="max-height: 80vh; overflow-y: auto;">
+    <div style="max-height: 70vh; overflow-y: auto;">
       <a-tree :treeData="formattedTreeData" :defaultExpandAll="false" @select="handleSelect" />
       <div style="margin-top: 20px;">
         <template v-if="clickedFiles.length === 0">
