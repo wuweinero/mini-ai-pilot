@@ -7,7 +7,7 @@
       <a-tooltip title="设置上下文">
         <SettingOutlined @click="openSettings" style="font-size: 20px; margin-right: 12px;" />
       </a-tooltip>
-      <a-tooltip title="清空上下文">
+      <a-tooltip title="清除全部">
         <StopOutlined @click="clearContext" style="font-size: 20px; margin-right: 12px;" />
       </a-tooltip>
       <a-tooltip title="清除聊天">
@@ -82,7 +82,7 @@
       :treeData="fileTreeData" 
       :clickedFiles="clickedFiles"
       @update:visible="isModalVisible = $event"
-      @update:clickedFiles="clickedFiles = $event"
+      @update:clickedFiles="clickedFiles = $event;clearHistory()"
     />
   </div>
 </template>
@@ -124,6 +124,7 @@ const clickedFiles = ref([]);
 
 const instantSetting = () => {
   vscode.postMessage({ command: 'currentFile' });
+  clearHistory();
 }
 
 const openSettings = () => {
@@ -133,7 +134,7 @@ const openSettings = () => {
 
 const clearContext = () => {
   clickedFiles.value = [];
-  updateSystemPrompt();
+  clearHistory();
 }
 
 const clearHistory = () => {
@@ -205,7 +206,6 @@ onMounted(() => {
     saveState();
     updateSystemPrompt();
   }, { deep: true });
-  updateSystemPrompt();
   window.addEventListener('message', event => {
     const { data } = event;
     switch (data.command) {
