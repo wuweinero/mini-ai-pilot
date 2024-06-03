@@ -313,6 +313,7 @@ const updateClickedFiles = () => {
   z-index: 999;
   height: 72px;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .mode-box {
