@@ -15,9 +15,9 @@
           <ClearOutlined @click="clearHistory" style="font-size: 20px; margin-right: 12px;" />
         </a-tooltip>
         <a-select v-model:value="selectedMode" style="width: 100px;">
-          <a-select-option value="默认">默认</a-select-option>
           <a-select-option value="完整代码">完整代码</a-select-option>
           <a-select-option value="片段修改">片段修改</a-select-option>
+          <a-select-option value="聊天">聊天</a-select-option>
         </a-select>
       </div>
       <div class="question-box">
@@ -131,7 +131,7 @@ const isFetching = ref(false);
 const isModalVisible = ref(false);
 const fileTreeData = ref([]);
 const clickedFiles = ref([]);
-const selectedMode = ref("默认");
+const selectedMode = ref("完整代码");
 
 const instantSetting = () => {
   vscode.postMessage({ command: 'currentFile' });

@@ -12,6 +12,7 @@
               <span>{{ file }}</span>
             </template>
             <template #actions>
+              <VerticalAlignTopOutlined @click="moveToTop(index)" />
               <UpOutlined @click="moveUp(index)" />
               <DownOutlined @click="moveDown(index)" />
               <DeleteOutlined @click="removeFile(index)" />
@@ -33,7 +34,7 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import { UpOutlined, DownOutlined, DeleteOutlined, CloseOutlined, SettingOutlined } from '@ant-design/icons-vue';
+import { UpOutlined, DownOutlined, DeleteOutlined, CloseOutlined, VerticalAlignTopOutlined } from '@ant-design/icons-vue';
 import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
@@ -113,6 +114,15 @@ const moveDown = (index) => {
     const temp = updatedFiles[index];
     updatedFiles.splice(index, 1);
     updatedFiles.splice(index + 1, 0, temp);
+    emit('update:clickedFiles', updatedFiles);
+  }
+};
+
+const moveToTop = (index) => {
+  if (index > 0) {
+    const updatedFiles = [...props.clickedFiles];
+    const [file] = updatedFiles.splice(index, 1);
+    updatedFiles.unshift(file);
     emit('update:clickedFiles', updatedFiles);
   }
 };
