@@ -25,10 +25,10 @@
               :auto-size="{maxRows: 5, minRows: 1}"
               style="flex:1; margin:0 12px;"
               @keydown="handleKeydown" ref="textArea"/>
-        <a-tooltip v-if="!isFetching" title="发送消息">
+        <a-tooltip v-if="!isFetching" title="发送">
           <SendOutlined @click="sendMessage(false)" style="font-size: 20px;" />
         </a-tooltip>
-        <a-tooltip v-else title="取消发送">
+        <a-tooltip v-else title="终止">
           <PauseCircleOutlined @click="abortFetching" style="font-size: 20px;" />
         </a-tooltip>
       </div>
@@ -312,6 +312,7 @@ const updateClickedFiles = () => {
   bottom: 30px;
   z-index: 999;
   height: 72px;
+  overflow-x: hidden;
 }
 
 .mode-box {
