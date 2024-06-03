@@ -12,10 +12,21 @@
               <span>{{ file }}</span>
             </template>
             <template #actions>
-              <VerticalAlignTopOutlined @click="moveToTop(index)" />
-              <UpOutlined @click="moveUp(index)" />
-              <DownOutlined @click="moveDown(index)" />
-              <DeleteOutlined @click="removeFile(index)" />
+              <a-tooltip title="置顶">
+                <VerticalAlignTopOutlined @click="moveToTop(index)" />
+              </a-tooltip>
+              <a-tooltip title="置底">
+                <VerticalAlignBottomOutlined @click="moveToBottom(index)" />
+              </a-tooltip>
+              <a-tooltip title="上移">
+                <UpOutlined @click="moveUp(index)" />
+              </a-tooltip>
+              <a-tooltip title="下移">
+                <DownOutlined @click="moveDown(index)" />
+              </a-tooltip>
+              <a-tooltip title="删除">
+                <DeleteOutlined @click="removeFile(index)" />
+              </a-tooltip>
             </template>
           </a-list-item>
         </a-list>
@@ -34,7 +45,7 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import { UpOutlined, DownOutlined, DeleteOutlined, CloseOutlined, VerticalAlignTopOutlined } from '@ant-design/icons-vue';
+import { UpOutlined, DownOutlined, DeleteOutlined, CloseOutlined, VerticalAlignTopOutlined, VerticalAlignBottomOutlined } from '@ant-design/icons-vue';
 import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
@@ -123,6 +134,15 @@ const moveToTop = (index) => {
     const updatedFiles = [...props.clickedFiles];
     const [file] = updatedFiles.splice(index, 1);
     updatedFiles.unshift(file);
+    emit('update:clickedFiles', updatedFiles);
+  }
+};
+
+const moveToBottom = (index) => {
+  if (index < props.clickedFiles.length - 1) {
+    const updatedFiles = [...props.clickedFiles];
+    const [file] = updatedFiles.splice(index, 1);
+    updatedFiles.push(file);
     emit('update:clickedFiles', updatedFiles);
   }
 };
