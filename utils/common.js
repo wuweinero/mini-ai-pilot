@@ -153,7 +153,7 @@ const generateSystemInstructions = async (filePaths) => {
         if (['txt', 'md'].includes(fileExtension)) {
           return content + '\n\n';
         } else {
-          return `// ${filePath}\n\`\`\`${fileExtension}\n${content}\n\`\`\`` + '\n\n';
+          return `## ${filePath}\n\`\`\`${fileExtension}\n${content}\n\`\`\`` + '\n\n';
         }
       }
       return null;
