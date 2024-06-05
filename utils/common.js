@@ -141,11 +141,21 @@ const getContent = async (filePath) => {
 
 const generateSystemInstructions = async (filePaths) => {
   const defaultInstruction = "请结合上下文信息，对用户的问题进行解答，请尽量使用中文进行交流。";
-  if (filePaths.length === 0) {
-    return defaultInstruction;
+  const codeInstruction = "请结合上述代码和用户问题，按如下要求进行回答:\n1.详细阐述问题解决思路step-by-step;\n2.使用markdown格式进行回答;\n3.尽可能使用中文交流。";
+  let instructionToUse = defaultInstruction;
+
+  // 检查是否有非 md 或 txt 文件
+  const hasCodeFiles = filePaths.some(filePath => !['md', 'txt'].includes(filePath.split('.').pop()));
+  if (hasCodeFiles) {
+    instructionToUse = codeInstruction;
   }
+
+  if (filePaths.length === 0) {
+    return instructionToUse;
+  }
+
   try {
-    // 按filePaths的顺序读取文件内容
+    // 按 filePaths 的顺序读取文件内容
     const fileContents = await Promise.all(filePaths.map(async (filePath) => {
       const content = await getContent(filePath);
       if (content) {
@@ -161,14 +171,13 @@ const generateSystemInstructions = async (filePaths) => {
     // 合并所有文件的内容
     const validContents = fileContents.filter(Boolean).join('');
     // 生成最终的指令
-    const finalInstructions = validContents + defaultInstruction;
+    const finalInstructions = validContents + instructionToUse;
     return finalInstructions;
   } catch (error) {
     console.error('Error generating system instructions:', error);
-    return defaultInstruction;
+    return instructionToUse;
   }
 };
-
 
 
 module.exports = {
