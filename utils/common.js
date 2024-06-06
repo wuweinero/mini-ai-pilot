@@ -141,7 +141,7 @@ const getContent = async (filePath) => {
 
 const generateSystemInstructions = async (filePaths) => {
   const defaultInstruction = "请结合上下文信息，对用户的问题进行解答，请尽量使用中文进行交流。";
-  const codeInstruction = "请结合上述代码和用户问题，按如下要求进行回答:\n- 对于代码生成或修改问题，首先详细阐述问题解决思路step-by-step，然后再生成或修改代码;\n- 生成或修改代码时，一定要把代码放在代码块中，并在代码块前面使用##标明代码块对应的代码文件;\n- 尽可能使用中文交流。";
+  const codeInstruction = "请结合上述代码和用户问题，按如下要求进行回答:\n- 对于代码生成或修改问题，首先有条理的阐述问题解决思路，然后再生成或修改代码;\n- 生成或修改代码时，一定要把代码放在代码块中，并在代码块外部使用##标明代码块对应的代码文件;\n- 尽可能使用中文交流。";
   let instructionToUse = defaultInstruction;
 
   // 检查是否有非 md 或 txt 文件
