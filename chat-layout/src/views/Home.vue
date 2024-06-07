@@ -132,6 +132,7 @@ const isModalVisible = ref(false);
 const fileTreeData = ref([]);
 const clickedFiles = ref([]);
 const selectedMode = ref("默认");
+const allowAutoScroll = ref(true);
 
 const instantSetting = () => {
   vscode.postMessage({ command: 'currentFile' });
@@ -197,6 +198,11 @@ const sendMessage = (reflag) => {
     command: 'fetch',
     messages: JSON.stringify(history.value)
   });
+  allowAutoScroll.value = true;
+  const element = displayBox.value;
+  if (element) {
+    element.scrollTop = element.scrollHeight;
+  }
 };
 
 const abortFetching = () => vscode.postMessage({ command: 'abort' });
@@ -216,7 +222,14 @@ onMounted(() => {
     saveState();
     nextTick(() => {
       const element = displayBox.value;
-      if (element) element.scrollTop = element.scrollHeight;
+      if (element && allowAutoScroll.value) {
+        const delta = element.scrollHeight - element.scrollTop - element.clientHeight;
+        if(delta < 300){
+          element.scrollTop = element.scrollHeight;
+        }else{
+          allowAutoScroll.value = false;
+        }
+      }
     });
   }, { deep: true });
   watch(clickedFiles, () => {
@@ -270,7 +283,6 @@ onMounted(() => {
 });
 
 const saveState = () => {
-  console.log('save', history.value, clickedFiles.value);
   vscode.setState({ 
     history: history.value,
     clickedFiles: clickedFiles.value
@@ -279,7 +291,6 @@ const saveState = () => {
 
 const loadState = () => {
   let state = vscode.getState();
-  console.log('load', state);
   if (state) {
     history.value = state.history || [];
     clickedFiles.value = state.clickedFiles || [];
