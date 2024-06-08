@@ -36,45 +36,64 @@ const processFetchResponse = (webviewView, response) => {
   return new Promise((resolve, reject) => {
     try {
       const reader = response.body.getReader();
-      let decoder = new TextDecoder('utf-8');
+      const decoder = new TextDecoder('utf-8');
+      let buffer = ''; // 用于暂存不完整的chunk数据
 
-      reader.read().then(function processText({ done, value }) {
+      const processText = ({ done, value }) => {
         if (done) {
+          if (buffer.length > 0 && !buffer.includes('[DONE]')) { // 处理最后一个可能残留在缓冲区的chunk
+            processChunk(buffer);
+          }
           sendFinishMessage(webviewView);
           resolve();
           return;
         }
-        let chunk = decoder.decode(value, { stream: true });
-        let chunkArray = chunk.split("data:");
+
+        buffer += decoder.decode(value, { stream: true });
+        let chunkArray = buffer.split("data:");
+
+        // 处理缓冲区中完整的数据块，最后一个可能是不完整的chunk需要保留在缓冲区中
+        buffer = chunkArray.pop(); 
+
         for (let jsonString of chunkArray) {
           jsonString = jsonString.trim();
-          if (jsonString === '[DONE]') {
+          if (jsonString.includes('[DONE]')) {
             sendFinishMessage(webviewView);
             resolve();
             return;
           }
           else if (jsonString.length > 0) {
-            try {
-              const payload = JSON.parse(jsonString);
-              let payloadTemp = payload['choices'][0];
-              let sendChunk = payloadTemp['delta'] ? payloadTemp['delta']['content'] : payloadTemp['message']['content'];
-              sendChunk && webviewView.webview.postMessage({
-                command: 'response',
-                finished: false,
-                text: sendChunk,
-              });
-            } catch (error) {
-              console.log('Error:', error);
-            }
+            processChunk(jsonString);
           }
         }
+
         return reader.read().then(processText);
-      }).catch(reject);
+      };
+
+      const processChunk = (chunk) => {
+        try {
+          const payload = JSON.parse(chunk);
+          const payloadTemp = payload['choices'][0];
+          const sendChunk = payloadTemp['delta'] ? payloadTemp['delta']['content'] : payloadTemp['message']['content'];
+          if (sendChunk) {
+            webviewView.webview.postMessage({
+              command: 'response',
+              finished: false,
+              text: sendChunk,
+            });
+          }
+        } catch (error) {
+          console.log('Error:', error);
+        }
+      };
+
+      reader.read().then(processText).catch(reject);
     } catch (error) {
       reject(error);
     }
   });
 };
+
 
 const listFiles = async (folderUri, folder = '') => {
   let filesList = [];
