@@ -198,11 +198,13 @@ const sendMessage = (reflag) => {
     command: 'fetch',
     messages: JSON.stringify(history.value)
   });
-  allowAutoScroll.value = true;
-  const element = displayBox.value;
-  if (element) {
-    element.scrollTop = element.scrollHeight;
-  }
+  setTimeout(() => {
+    const element = displayBox.value;
+    if (element) {
+      element.scrollTop = element.scrollHeight;
+    }
+    allowAutoScroll.value = true;
+  }, 100)
 };
 
 const abortFetching = () => vscode.postMessage({ command: 'abort' });

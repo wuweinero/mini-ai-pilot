@@ -7,7 +7,7 @@
   },
   "icon": "logo.png",
   "publisher": "wuweinero",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -37,12 +37,12 @@
         },
         "mini-ai-pilot.context_length": {
           "type": "number",
-          "default": 20480,
+          "default": 20000,
           "description": "The maximum number of input characters for the completion API."
         },
         "mini-ai-pilot.max_tokens": {
           "type": "number",
-          "default": 4096,
+          "default": 2000,
           "description": "The maximum number of output tokens for the completion API."
         },
         "mini-ai-pilot.temperature": {
