@@ -9,7 +9,7 @@
         <a-list v-else :dataSource="clickedFiles" bordered>
           <a-list-item v-for="(file, index) in clickedFiles" :key="file">
             <template #default>
-              <span>{{ file }}</span>
+              <span class="file-name">{{ file }}</span>
             </template>
             <template #actions>
               <a-tooltip title="置顶">
@@ -168,5 +168,10 @@ const clearAll = () => {
 .ant-list-item-actions {
   display: flex;
   gap: 10px;
+}
+
+.file-name {
+  width: 50vw;
+  word-wrap: break-word;
 }
 </style>
