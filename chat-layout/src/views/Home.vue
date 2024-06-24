@@ -22,8 +22,8 @@
       </div>
       <div class="question-box">
         <a-textarea v-model:value="userMessage" placeholder="Enter发送, Shift+Enter换行" 
-              :auto-size="{maxRows: 5, minRows: 1}"
-              style="flex:1; margin:0 12px;"
+              :auto-size="{maxRows: 10, minRows: 1}"
+              style="flex:1; margin:0 12px;" allowClear
               @keydown="handleKeydown" ref="textArea"/>
         <a-tooltip v-if="!isFetching" title="发送">
           <SendOutlined @click="sendMessage(false)" style="font-size: 20px;" />
@@ -319,14 +319,12 @@ const updateClickedFiles = () => {
 
 <style scoped>
 .bottom-box {
-  padding: 0 24px 0 12px;
+  padding: 12px 24px 0 12px;
   position: absolute;
   width: 100%;
   bottom: 30px;
   z-index: 999;
-  height: 72px;
-  overflow-x: hidden;
-  overflow-y: auto;
+  background-color: #141414;
 }
 
 .mode-box {
