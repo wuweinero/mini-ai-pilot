@@ -173,7 +173,7 @@ const sendMessage = (reflag) => {
   if (isFetching.value) return;
   if (!reflag) {
     if (!userMessage.value){
-      message.info('请先输入您的问题!');
+      message.info('请先输入您的问题');
       return;
     }
     let content = userMessage.value;
@@ -329,7 +329,7 @@ const updateClickedFiles = () => {
 .display-box {
   padding: 12px 24px;
   overflow: auto;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 90px);
 }
 
 .empty-container {
