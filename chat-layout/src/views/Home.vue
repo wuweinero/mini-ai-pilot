@@ -14,13 +14,6 @@
         <a-tooltip title="清除聊天">
           <ClearOutlined @click="clearHistory" style="font-size: 20px; margin-right: 12px;" />
         </a-tooltip>
-        <a-select v-model:value="selectedMode" style="width: 100px;">
-          <a-select-option value="默认">默认</a-select-option>
-          <a-select-option value="完整代码">完整代码</a-select-option>
-          <a-select-option value="片段修改">片段修改</a-select-option>
-        </a-select>
-      </div>
-      <div class="question-box">
         <a-textarea v-model:value="userMessage" placeholder="Enter发送, Shift+Enter换行" 
               :auto-size="{maxRows: 10, minRows: 1}"
               style="flex:1; margin:0 12px;" allowClear
@@ -33,7 +26,6 @@
         </a-tooltip>
       </div>
     </div>
-    
     
     <div class="display-box" v-if="history.length > 0" ref="displayBox">
       <template v-for="(message, index) in history" :key="index">
@@ -131,7 +123,6 @@ const isFetching = ref(false);
 const isModalVisible = ref(false);
 const fileTreeData = ref([]);
 const clickedFiles = ref([]);
-const selectedMode = ref("默认");
 const allowAutoScroll = ref(true);
 
 const instantSetting = () => {
@@ -183,11 +174,6 @@ const sendMessage = (reflag) => {
   if (!reflag) {
     if (!userMessage.value) return;
     let content = userMessage.value;
-    if (selectedMode.value.includes('完整')) {
-      content += `\n\n请根据上下文，生成完整的代码。`;
-    }else if(selectedMode.value.includes('片段')){
-      content += `\n\n只需要告诉我应该怎么修改，不需要生成完整的代码。`;
-    }
     history.value.push({ role: 'user', content: content });
     userMessage.value = '';
   } else {
@@ -325,6 +311,8 @@ const updateClickedFiles = () => {
   bottom: 30px;
   z-index: 999;
   background-color: #141414;
+  display: flex;
+  align-items: center;
 }
 
 .mode-box {
@@ -332,11 +320,7 @@ const updateClickedFiles = () => {
   align-items: center;
   margin-bottom: 8px;
   padding-left: 12px;
-}
-
-.question-box {
-  display: flex;
-  align-items: center;
+  width: 100%;
 }
 
 .display-box {
@@ -349,7 +333,7 @@ const updateClickedFiles = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 90px);
 }
 
 .pre-container {
