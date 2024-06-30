@@ -12,7 +12,7 @@
           <StopOutlined @click="clearContext" style="font-size: 20px; margin-right: 12px;" />
         </a-tooltip>
         <a-tooltip title="清除聊天">
-          <ClearOutlined @click="clearHistory" style="font-size: 20px; margin-right: 12px;" />
+          <ClearOutlined @click="clearHistory" style="font-size: 20px;" />
         </a-tooltip>
         <a-textarea v-model:value="userMessage" placeholder="Enter发送, Shift+Enter换行" 
               :auto-size="{maxRows: 10, minRows: 1}"
@@ -172,7 +172,10 @@ const copyToHere = (index) => {
 const sendMessage = (reflag) => {
   if (isFetching.value) return;
   if (!reflag) {
-    if (!userMessage.value) return;
+    if (!userMessage.value){
+      message.info('请先输入您的问题!');
+      return;
+    }
     let content = userMessage.value;
     history.value.push({ role: 'user', content: content });
     userMessage.value = '';
