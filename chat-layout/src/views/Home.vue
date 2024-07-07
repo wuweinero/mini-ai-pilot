@@ -140,12 +140,11 @@ const model = ref('');
 const handleModeChange = (value) => {
   mode.value = value;
   vscode.postMessage({ command: 'mode', mode: mode.value });
-  vscode.setState({mode: mode.value})
 };
 
 const handleModelChange = (value) => {
   model.value = value
-  vscode.setState({model: model.value})
+  saveState();
 }
 
 const instantSetting = () => {
@@ -235,8 +234,8 @@ const handleKeydown = async (event) => {
 
 onMounted(() => {
   loadState();
-  watch(history, (newValue) => {
-    vscode.setState({history: newValue})
+  watch(history, () => {
+    saveState();
     nextTick(() => {
       const element = displayBox.value;
       if (element && allowAutoScroll.value) {
@@ -249,8 +248,8 @@ onMounted(() => {
       }
     });
   }, { deep: true });
-  watch(clickedFiles, (newValue) => {
-    vscode.setState({clickedFiles: newValue})
+  watch(clickedFiles, () => {
+    saveState();
     updateSystemPrompt();
   }, { deep: true });
   window.addEventListener('message', event => {
@@ -294,7 +293,7 @@ onMounted(() => {
         if(!models.value.includes(model.value)){
           model.value = models.value[0]
         }
-        vscode.setState({ mode: mode.value, model: model.value })
+        saveState()
         break;
       }
       default:
@@ -313,6 +312,15 @@ const loadState = () => {
     model.value = state.model || '';
   }
 };
+
+const saveState = () => {
+  vscode.setState({
+    history: history.value,
+    clickedFiles: clickedFiles.value, 
+    mode: mode.value, 
+    model: model.value
+   });
+}
 
 const updateClickedFiles = () => {
   const flattenFileTree = (nodes) => {
