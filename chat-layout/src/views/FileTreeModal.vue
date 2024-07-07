@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model:visible="isVisible" title="上下文" @cancel="handleCancel" width="90vw" :footer="null">
+  <a-modal v-model:open="isVisible" title="上下文" @cancel="handleCancel" width="90vw" :footer="null">
     <div style="max-height: 70vh; overflow-y: auto;">
       <a-tree :treeData="formattedTreeData" :defaultExpandAll="false" @select="handleSelect" />
       <div style="margin-top: 20px;">

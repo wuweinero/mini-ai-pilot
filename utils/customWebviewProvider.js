@@ -4,14 +4,15 @@ const fs = require('fs');
 const { loadWebviewHtml, sendFinishMessage, processFetchResponse, 
   listFiles, structureFiles, generateSystemInstructions } = require('./common');
 
-const config = vscode.workspace.getConfiguration('mini-ai-pilot');
-const endpoint = config.get('endpoint');
-const apiKey = config.get('api_key');
-const model = config.get('model');
-const maxTokens = config.get('max_tokens');
-const temperature = config.get('temperature');
-const maxLength = config.get('context_length');
+let currentMode = '默认源'
+const base = vscode.workspace.getConfiguration('mini-ai-pilot');
+const alternate = vscode.workspace.getConfiguration('mini-ai-pilot').get('alternate');
 let abortController = null;
+
+const sendModels = (webviewView) => {
+  const models = (currentMode === '默认源' ? base.model : alternate.model).split(';')
+  webviewView.webview.postMessage({ command: 'models', models: JSON.stringify(models)});
+}
 
 class CustomWebviewProvider {
   constructor(extensionUri) {
@@ -22,19 +23,21 @@ class CustomWebviewProvider {
   resolveWebviewView(webviewView) {
     this._webview = webviewView;
     loadWebviewHtml(webviewView, this._extensionUri);
-    webviewView.webview.postMessage({ command: 'reload', maxLength });
-
-    webviewView.onDidChangeVisibility(() => {
-      if (webviewView.visible) {
-        webviewView.webview.postMessage({ command: 'reload', maxLength });
-      }
-    });
 
     webviewView.webview.onDidReceiveMessage(async (message) => {
       try {
         const workspaceFolders = vscode.workspace.workspaceFolders;
         switch (message.command) {
           case 'fetch':
+            // 获取模型和模式
+            const {model, mode} = message
+            const config = mode === '默认源' ? base : alternate
+            const endpoint = config.endpoint;
+            const apiKey = config.api_key;
+            const maxTokens = config.max_tokens;
+            const temperature = config.temperature;
+            const maxLength = config.context_length;
+            // 组织消息
             const newMessages = JSON.parse(message.messages);
             const totalContentLength = newMessages.reduce((acc, msg) => acc + msg.content.length, 0);
             if (totalContentLength > maxLength) {
@@ -45,18 +48,15 @@ class CustomWebviewProvider {
               });
               return;
             }
-
             abortController = new AbortController();
             const url = endpoint + "/chat/completions";
             const data = {
               max_tokens: maxTokens,
               temperature: temperature,
               stream: true,
-              messages: newMessages
+              messages: newMessages,
+              model
             };
-            if (model) {
-              data.model = model;
-            }
             const headers = {
               "Content-Type": "application/json"
             };
@@ -118,6 +118,9 @@ class CustomWebviewProvider {
             const prompt = await generateSystemInstructions(clickedFiles);
             webviewView.webview.postMessage({ command: 'systemPrompt', prompt });
             break;
+          case 'mode':
+            currentMode = message.mode
+            sendModels(webviewView)
           default:
             break;
         }

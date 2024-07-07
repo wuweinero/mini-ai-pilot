@@ -12,11 +12,19 @@
           <StopOutlined @click="clearContext" style="font-size: 20px; margin-right: 12px;" />
         </a-tooltip>
         <a-tooltip title="清除聊天">
-          <ClearOutlined @click="clearHistory" style="font-size: 20px;" />
+          <ClearOutlined @click="clearHistory" style="font-size: 20px; margin-right: 12px;" />
         </a-tooltip>
+        <a-select v-model:value="mode" placement="topLeft" size="small" @change="handleModeChange" style="width: 80px; margin-right: 12px;">
+          <a-select-option v-for="item in modes" :key="item" :value="item">{{ item }}</a-select-option>
+        </a-select>
+        <a-select v-model:value="model" placement="topLeft" size="small" @change="handleModelChange" style="width: 160px;">
+          <a-select-option v-for="item in models" :key="item" :value="item">{{ item }}</a-select-option>
+        </a-select>
+      </div>
+      <div class="mode-box">
         <a-textarea v-model:value="userMessage" placeholder="Enter发送, Shift+Enter换行" 
               :auto-size="{maxRows: 10, minRows: 1}"
-              style="flex:1; margin:0 12px;" allowClear
+              style="flex:1; margin-right: 12px;" allowClear
               @keydown="handleKeydown" ref="textArea"/>
         <a-tooltip v-if="!isFetching" title="发送">
           <SendOutlined @click="sendMessage(false)" style="font-size: 20px;" />
@@ -124,6 +132,21 @@ const isModalVisible = ref(false);
 const fileTreeData = ref([]);
 const clickedFiles = ref([]);
 const allowAutoScroll = ref(true);
+const modes = ref(['默认源', '备用源']);
+const mode = ref('默认源');
+const models = ref([]);
+const model = ref('');
+
+const handleModeChange = (value) => {
+  mode.value = value;
+  vscode.postMessage({ command: 'mode', mode: mode.value });
+  vscode.setState({mode: mode.value})
+};
+
+const handleModelChange = (value) => {
+  model.value = value
+  vscode.setState({model: model.value})
+}
 
 const instantSetting = () => {
   vscode.postMessage({ command: 'currentFile' });
@@ -177,7 +200,7 @@ const sendMessage = (reflag) => {
       return;
     }
     let content = userMessage.value;
-    history.value.push({ role: 'user', content: content });
+    history.value.push({ role: 'user', content });
     userMessage.value = '';
   } else {
     history.value.pop();
@@ -185,7 +208,9 @@ const sendMessage = (reflag) => {
   isFetching.value = true;
   vscode.postMessage({
     command: 'fetch',
-    messages: JSON.stringify(history.value)
+    messages: JSON.stringify(history.value),
+    model: model.value,
+    mode: mode.value
   });
   setTimeout(() => {
     const element = displayBox.value;
@@ -209,8 +234,9 @@ const handleKeydown = async (event) => {
 };
 
 onMounted(() => {
-  watch(history, () => {
-    saveState();
+  loadState();
+  watch(history, (newValue) => {
+    vscode.setState({history: newValue})
     nextTick(() => {
       const element = displayBox.value;
       if (element && allowAutoScroll.value) {
@@ -223,8 +249,8 @@ onMounted(() => {
       }
     });
   }, { deep: true });
-  watch(clickedFiles, () => {
-    saveState();
+  watch(clickedFiles, (newValue) => {
+    vscode.setState({clickedFiles: newValue})
     updateSystemPrompt();
   }, { deep: true });
   window.addEventListener('message', event => {
@@ -240,10 +266,6 @@ onMounted(() => {
         if (data.finished) {
           isFetching.value = false;
         }
-        break;
-      }
-      case 'reload': {
-        loadState();
         break;
       }
       case 'files': {
@@ -267,24 +289,28 @@ onMounted(() => {
         }
         break;
       }
+      case 'models':{
+        models.value = JSON.parse(data.models)
+        if(!models.value.includes(model.value)){
+          model.value = models.value[0]
+        }
+        vscode.setState({ mode: mode.value, model: model.value })
+        break;
+      }
       default:
         break;
     }
   });
+  vscode.postMessage({ command: 'mode', mode: mode.value });
 });
-
-const saveState = () => {
-  vscode.setState({ 
-    history: history.value,
-    clickedFiles: clickedFiles.value
-  });
-};
 
 const loadState = () => {
   let state = vscode.getState();
   if (state) {
     history.value = state.history || [];
     clickedFiles.value = state.clickedFiles || [];
+    mode.value = state.mode || '默认源';
+    model.value = state.model || '';
   }
 };
 
@@ -314,29 +340,27 @@ const updateClickedFiles = () => {
   bottom: 30px;
   z-index: 999;
   background-color: #141414;
-  display: flex;
-  align-items: center;
 }
 
 .mode-box {
   display: flex;
   align-items: center;
   margin-bottom: 8px;
-  padding-left: 12px;
   width: 100%;
+  padding-left: 12px;
 }
 
 .display-box {
   padding: 12px 24px;
   overflow: auto;
-  height: calc(100vh - 90px);
+  height: calc(100vh - 120px);
 }
 
 .empty-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 90px);
+  height: calc(100vh - 120px);
 }
 
 .pre-container {
