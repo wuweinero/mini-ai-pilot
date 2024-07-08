@@ -14,10 +14,10 @@
         <a-tooltip title="清除聊天">
           <ClearOutlined @click="clearHistory" style="font-size: 20px; margin-right: 12px;" />
         </a-tooltip>
-        <a-select v-model:value="mode" placement="topLeft" size="small" @change="handleModeChange" style="width: 80px; margin-right: 12px;">
+        <a-select v-model:value="mode" :dropdown-match-select-width="false" placement="topLeft" size="small" @change="handleModeChange" style="width: 80px; margin-right: 12px;">
           <a-select-option v-for="item in modes" :key="item" :value="item">{{ item }}</a-select-option>
         </a-select>
-        <a-select v-model:value="model" placement="topLeft" size="small" @change="handleModelChange" style="width: 160px;">
+        <a-select v-model:value="model" :dropdown-match-select-width="false" placement="topLeft" size="small" @change="handleModelChange" style="width: 120px;">
           <a-select-option v-for="item in models" :key="item" :value="item">{{ item }}</a-select-option>
         </a-select>
       </div>
