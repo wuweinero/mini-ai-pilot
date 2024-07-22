@@ -41,9 +41,6 @@ const processFetchResponse = (webviewView, response) => {
 
       const processText = ({ done, value }) => {
         if (done) {
-          if (buffer.length > 0 && !buffer.includes('[DONE]')) { // 处理最后一个可能残留在缓冲区的chunk
-            processChunk(buffer);
-          }
           sendFinishMessage(webviewView);
           resolve();
           return;
@@ -51,10 +48,7 @@ const processFetchResponse = (webviewView, response) => {
 
         buffer += decoder.decode(value, { stream: true });
         let chunkArray = buffer.split("data:");
-
-        // 处理缓冲区中完整的数据块，最后一个可能是不完整的chunk需要保留在缓冲区中
         buffer = chunkArray.pop(); 
-
         for (let jsonString of chunkArray) {
           jsonString = jsonString.trim();
           if (jsonString.includes('[DONE]')) {
@@ -63,28 +57,27 @@ const processFetchResponse = (webviewView, response) => {
             return;
           }
           else if (jsonString.length > 0) {
-            processChunk(jsonString);
+            try {
+              const payload = JSON.parse(jsonString);
+              const choices = payload['choices'];
+              const payloadTemp = choices.length > 0 ? choices[0] : null;
+              if (payloadTemp) {
+                const sendChunk = payloadTemp['delta'] ? payloadTemp['delta']['content'] : payloadTemp['message']['content'];
+                if (sendChunk) {
+                  webviewView.webview.postMessage({
+                    command: 'response',
+                    finished: false,
+                    text: sendChunk,
+                  });
+                }
+              }
+            } catch (error) {
+              console.log('Error:', error);
+            }
           }
         }
 
         return reader.read().then(processText);
-      };
-
-      const processChunk = (chunk) => {
-        try {
-          const payload = JSON.parse(chunk);
-          const payloadTemp = payload['choices'][0];
-          const sendChunk = payloadTemp['delta'] ? payloadTemp['delta']['content'] : payloadTemp['message']['content'];
-          if (sendChunk) {
-            webviewView.webview.postMessage({
-              command: 'response',
-              finished: false,
-              text: sendChunk,
-            });
-          }
-        } catch (error) {
-          console.log('Error:', error);
-        }
       };
 
       reader.read().then(processText).catch(reject);
